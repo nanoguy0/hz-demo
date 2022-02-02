@@ -144,11 +144,11 @@ async function start() {
         updateAmount = 15; // Ammount of HZ to update by at random intervals
         includeDecrease = true; // Chance to decrease HZ instead of increase
         decreaseChance = 0.2; // 20% by default
-        minimumTime = 5; // Minimum amount of seconds to wait before changing the HZ
-        maximumTime = 10; // Maximum amount of seconds to wait before changing the HZ
+        minimumTime = 4; // Minimum amount of seconds to wait before changing the HZ
+        maximumTime = 8; // Maximum amount of seconds to wait before changing the HZ
 
         // frame information
-        currentHZ = 10;
+        currentHZ = 30;
 
         // The renderer
         renderInterval;
