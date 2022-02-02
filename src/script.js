@@ -34,6 +34,54 @@ async function start() {
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
     }
+    /**
+ * Allows to obtain the estimated Hz of the primary monitor in the system.
+ * 
+ * @param {Function} callback The function triggered after obtaining the estimated Hz of the monitor.
+ * @param {Boolean} runIndefinitely If set to true, the callback will be triggered indefinitely (for live counter).
+ */
+    function getScreenRefreshRate(callback, runIndefinitely) {
+        let requestId = null;
+        let callbackTriggered = false;
+        runIndefinitely = runIndefinitely || false;
+
+        if (!window.requestAnimationFrame) {
+            window.requestAnimationFrame = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+        }
+
+        let DOMHighResTimeStampCollection = [];
+
+        let triggerAnimation = function (DOMHighResTimeStamp) {
+            DOMHighResTimeStampCollection.unshift(DOMHighResTimeStamp);
+
+            if (DOMHighResTimeStampCollection.length > 10) {
+                let t0 = DOMHighResTimeStampCollection.pop();
+                let fps = Math.floor(1000 * 10 / (DOMHighResTimeStamp - t0));
+
+                if (!callbackTriggered) {
+                    callback.call(undefined, fps, DOMHighResTimeStampCollection);
+                }
+
+                if (runIndefinitely) {
+                    callbackTriggered = false;
+                } else {
+                    callbackTriggered = true;
+                }
+            }
+
+            requestId = window.requestAnimationFrame(triggerAnimation);
+        };
+
+        window.requestAnimationFrame(triggerAnimation);
+
+        // Stop after half second if it shouldn't run indefinitely
+        if (!runIndefinitely) {
+            window.setTimeout(function () {
+                window.cancelAnimationFrame(requestId);
+                requestId = null;
+            }, 500);
+        }
+    }
 
     // This is in charge of managing data collection
     const store = new (class Storage {
@@ -221,13 +269,13 @@ async function start() {
             await new Promise(res => $('#settings-card').fadeIn(res));
             $('#json-renderer').jsonViewer({
                 TestLength: test.testLength,
-                Ball: {
-                    BallRadius : test.ballRadius,
-                    BallPosition: test.ballPosition,
-                    BallSpeed: test.ballSpeed,
-                    BallColor: test.ballColor
-                },
-                Test: {
+                // Ball: {
+                //     BallRadius: test.ballRadius,
+                //     BallPosition: test.ballPosition,
+                //     BallSpeed: test.ballSpeed,
+                //     BallColor: test.ballColor
+                // },
+                // Test: {
                     StartingHZ: test.startingHZ,
                     MaxHZ: test.maxHZ,
                     UpdateHZBy: test.updateAmount,
@@ -235,8 +283,12 @@ async function start() {
                     ChanceToDecreaseHZ: test.decreaseChance,
                     MinimumTimeBetweenChanges: test.minimumTime,
                     MaximumTimeBetweenChanges: test.maximumTime,
-                }
+                // }
             });
+            await new Promise(res => $('#monitor-hz-card').fadeIn(res)); 
+            $('#detected-hz').text('Loading...')
+            getScreenRefreshRate((hz, stats)=> $('#detected-hz').text(hz+"hz"), false);
+            
         };
 
         timelineChart;
@@ -249,7 +301,7 @@ async function start() {
                         data: []
                     },
                     {
-                        name:"User",
+                        name: "User",
                         data: []
                     }
                 ],
@@ -264,28 +316,28 @@ async function start() {
                 },
                 xaxis: {
                     type: 'datetime',
-                   
+
                 },
                 stroke: {
                     width: 1
-                  },
-                  fill: {
+                },
+                fill: {
                     type: 'solid',
                     opacity: 0.6
-                  },
+                },
             };
 
             const filteredDisplay = store.events.filter(e => e.type == "display");
             options.series[0].data = filteredDisplay.map((d, indx) => ({
                 x: d.current + " Hz",
-                y: [d.ts, filteredDisplay[indx+1] ? filteredDisplay[indx+1].ts : store.events[store.events.length-1].ts +1000]
+                y: [d.ts, filteredDisplay[indx + 1] ? filteredDisplay[indx + 1].ts : store.events[store.events.length - 1].ts + 1000]
             }));
             const filteredDisplayUser = store.events.filter(e => e.type == "user");
             options.series[1].data = filteredDisplayUser.map((d, indx) => ({
                 x: d.display.hz + " Hz",
-                y: [d.ts, filteredDisplayUser[indx+1] ? filteredDisplayUser[indx+1].ts : store.events[store.events.length -1].ts +1000]
+                y: [d.ts, filteredDisplayUser[indx + 1] ? filteredDisplayUser[indx + 1].ts : store.events[store.events.length - 1].ts + 1000]
             }));
-            
+
             console.log(options)
             this.timelineChart = new ApexCharts(document.querySelector(id), options);
             this.timelineChart.render();

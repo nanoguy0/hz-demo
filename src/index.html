@@ -1,5 +1,5 @@
 <html>
-    <title>HZ Demo</title>
+<title>HZ Demo</title>
 
 <head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -57,6 +57,7 @@
                             <div id="base-stats"></div>
                         </div>
                     </div>
+                    
                 </div>
                 <div class="col" id="timeline-stats-card" style="display: none;">
                     <div class="card">
@@ -71,6 +72,15 @@
                         <div class="card-body">
                             <h5 class="card-title">Settings</h5>
                             <pre id="json-renderer"></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="col" id="monitor-hz-card" style="width:fit-content; display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title" style="text-align:center;">Primary Monitor Hz</h5>
+                            <sub>We detected that your primary monitor's refresh rate is:</sub>
+                            <h1 id="detected-hz"class="mt-3 d-flex align-items-center justify-content-center card-text"></h1>
                         </div>
                     </div>
                 </div>
