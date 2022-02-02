@@ -2,6 +2,8 @@ setTimeout(() => {
     $('#startMenu').fadeIn();
 }, 500);
 
+const debug = false;
+
 async function start() {
     await new Promise((res) => $('#startMenu').fadeOut(() => $('#startMenu').remove() && res()));
     // Set the canvas up so its visible
@@ -155,7 +157,7 @@ async function start() {
         async beginCountdown() {
             var that = this;
             if (this.countdownState) return;
-            // return this.onTestComplete();
+            if (debug) return this.end = true && this.onTestComplete();
             await new Promise(res => setTimeout(res, 1000));
             for (let time = 5; time > 0; time--) {
                 fadeOutCanvas(time);
@@ -261,35 +263,30 @@ async function start() {
 
         async onComplete() {
             await new Promise(res => $('#testComplete').fadeIn(res));
-            // store.events = [{ "type": "display", "ts": 1643831070964, "display": { "hz": 30, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } }, "previous": 10, "current": 30 }, { "type": "display", "ts": 1643831078965, "display": { "hz": 45, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } }, "previous": 30, "current": 45 }, { "type": "user", "ts": 1643831079444, "display": { "hz": 45, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } } }, { "type": "display", "ts": 1643831085967, "display": { "hz": 60, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } }, "previous": 45, "current": 60 }, { "type": "user", "ts": 1643831086564, "display": { "hz": 60, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } } }, { "type": "display", "ts": 1643831094968, "display": { "hz": 75, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } }, "previous": 60, "current": 75 }, { "type": "user", "ts": 1643831098040, "display": { "hz": 75, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } } }];
+            if (debug) store.events = [{ "type": "display", "ts": 1643831070964, "display": { "hz": 30, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } }, "previous": 10, "current": 30 }, { "type": "display", "ts": 1643831078965, "display": { "hz": 45, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } }, "previous": 30, "current": 45 }, { "type": "user", "ts": 1643831079444, "display": { "hz": 45, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } } }, { "type": "display", "ts": 1643831085967, "display": { "hz": 60, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } }, "previous": 45, "current": 60 }, { "type": "user", "ts": 1643831086564, "display": { "hz": 60, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } } }, { "type": "display", "ts": 1643831094968, "display": { "hz": 75, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } }, "previous": 60, "current": 75 }, { "type": "user", "ts": 1643831098040, "display": { "hz": 75, "ball": { "position": { "x": 1744, "y": 192 }, "speed": { "x": 2, "y": -2 } } } }];
             await new Promise(res => $('#base-stats-card').fadeIn(res));
             this.renderBasicChart('#base-stats');
             await new Promise(res => $('#timeline-stats-card').fadeIn(res));
             this.renderTimelineChart('#timeline-stats');
             await new Promise(res => $('#settings-card').fadeIn(res));
-            $('#json-renderer').jsonViewer({
+            const fsettings = {
                 TestLength: test.testLength,
-                // Ball: {
-                //     BallRadius: test.ballRadius,
-                //     BallPosition: test.ballPosition,
-                //     BallSpeed: test.ballSpeed,
-                //     BallColor: test.ballColor
-                // },
-                // Test: {
-                    StartingHZ: test.startingHZ,
-                    MaxHZ: test.maxHZ,
-                    UpdateHZBy: test.updateAmount,
-                    AllowHZToDecrease: test.includeDecrease,
-                    ChanceToDecreaseHZ: test.decreaseChance,
-                    MinimumTimeBetweenChanges: test.minimumTime,
-                    MaximumTimeBetweenChanges: test.maximumTime,
-                // }
-            });
-            await new Promise(res => $('#monitor-hz-card').fadeIn(res)); 
+                StartingHZ: test.startingHZ,
+                MaxHZ: test.maxHZ,
+                UpdateHZBy: test.updateAmount,
+                AllowHZToDecrease: test.includeDecrease,
+                ChanceToDecreaseHZ: test.decreaseChance,
+                MinimumTimeBetweenChanges: test.minimumTime,
+                MaximumTimeBetweenChanges: test.maximumTime,
+            };
+            $('#json-renderer').jsonViewer(fsettings);
+            await new Promise(res => $('#monitor-hz-card').fadeIn(res));
             $('#detected-hz').text('Loading...')
-            getScreenRefreshRate((hz, stats)=> $('#detected-hz').text(hz+"hz"), false);
-            
+            getScreenRefreshRate((hz, stats) => $('#detected-hz').text(hz + "hz"), false);
+            var exportString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ settings: fsettings, data: store.events }));
+            $('#export-results').attr('href', exportString);
         };
+
 
         timelineChart;
         renderTimelineChart(id) {
