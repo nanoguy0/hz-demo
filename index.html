@@ -1,0 +1,85 @@
+<html>
+    <title>HZ Demo</title>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery.json-viewer@1.4.0/json-viewer/jquery.json-viewer.js"></script>
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/jquery.json-viewer@1.4.0/json-viewer/jquery.json-viewer.css">
+
+    <script src="./script.js"></script>
+    <style>
+        #content {
+            height: 100%;
+        }
+
+        #mainTest,
+        #testComplete,
+        #startMenu {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content" class="d-flex align-items-center justify-content-center">
+        <div id="startMenu">
+            <div class="d-flex flex-column align-items-center">
+                <h1>The HZ Test</h1>
+                <p style="width: 40%;">This tests your ability to detect changes in the framerate of screen before you.
+                    In this test, you will be shown a bouncing ball rendered at various framerates. All you need to do
+                    is report if you saw a change or not. Do this by clicking anywhere on the screen. </p>
+                <strong>*This is not a reaction speed test</strong>
+                <button id="startButton" class="btn btn-outline-primary" onclick="start()"> Start </button>
+            </div>
+        </div>
+        <canvas id="mainTest"></canvas>
+
+    </div>
+    <div id="testComplete">
+        <div class="mt-3 d-flex align-items-center justify-content-center">
+            <h5>Test Complete!</h5>
+        </div>
+        <div style="margin-left: 3em; margin-top: 1em; margin-right: 3em;">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col" id="base-stats-card" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Base Stats</h5>
+                            <div id="base-stats"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col" id="timeline-stats-card" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Timeline</h5>
+                            <div id="timeline-stats"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col" id="settings-card" style="display: none;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Settings</h5>
+                            <pre id="json-renderer"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</body>
+
+</html>
