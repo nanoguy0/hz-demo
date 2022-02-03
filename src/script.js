@@ -131,8 +131,8 @@ async function start() {
 
         // Ball information state
         ballRadius = 50;
-        ballSpeed = { x: 2, y: -2 };
-        ballPosition = { x: 100, y: 100 };
+        ballSpeed = { x: 2, y: 0 };
+        ballPosition = { x: 100, y: canvas.height/2 };
         ballColor = '#0095DD';
 
         // The interval in which the ball is updated
@@ -140,7 +140,7 @@ async function start() {
 
         // Random configuration
         startingHZ = 30;
-        maxHZ = 90;
+        maxHZ = 144;
         updateAmount = 15; // Ammount of HZ to update by at random intervals
         includeDecrease = true; // Chance to decrease HZ instead of increase
         decreaseChance = 0.2; // 20% by default
